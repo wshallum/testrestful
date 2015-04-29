@@ -1,0 +1,96 @@
+Phonebook
+
+Multiple entries
+Multiple lists
+1 entry -> multiple lists
+1 entry -> multiple phones
+
+List:
+ - name
+
+Entry:
+ - name
+ - phones [
+   - type
+   - number
+ ]
+ - lists [
+   - reference
+ ]
+
+/lists
+/lists/{}
+/lists/{}/entries
+/lists/{}/entries/{}
+
+/entries
+/entries/{} 
+/entries/{}/phones/{}
+/entries/{}/phones
+
+
+Entry:
+{
+	'url': '...',
+	'name': '...',
+	'phones': [
+		{
+			'url': '....',
+			'type': '....',
+			'number': '....'
+		}, ...
+	],
+	'lists': [
+		{
+			'url': '....',
+			'name': '....'
+		}, ...
+	]
+}
+
+List: 
+{
+	'url': '...',
+	'name': '...',
+	'entries': [
+		{
+			'url': '...',
+			'name': '...'
+		}, ...
+	]
+}
+
+Phone:
+{
+	'url': '...',
+	'type': '...',
+	'number': '...',
+	'entry': {
+		'url': '...',
+		'name': '...'
+	}
+}
+
+Create an entry:
+POST /entries
+Update an entry (??):
+PUT /entries/{id}
+Delete an entry:
+DELETE /entries/{id}
+Add phone to entry:
+POST /entries/{id}/phones
+Update phone:
+PUT /entries/{entry_id}/phones/{phone_id}
+Delete phone from entry:
+DELETE /entries/{entry_id}/phones/{phone_id}
+
+Create a list:
+POST /lists
+Update a list:
+PUT /lists/{id}
+Delete a list:
+DELETE /lists/{id}
+Add entry to list:
+POST /lists/{id}/entries
+Delete entry from list:
+DELETE /lists/{list_id}/entries/{entry_id}
