@@ -11,6 +11,9 @@ class TestAddAndGetEntries(BaseBackendTest):
         all_entries = requests.get(self.url('/entries'))
         self.assertEqual(
             all_entries.status_code, 200, "GET /entries returns 200")
+        self.assertEqual(
+            all_entries.headers['content-type'], "application/json",
+            "GET /entries content-type is JSON")
         # The user then adds an entry
         add_result = requests.post(
             self.url('/entries'), json.dumps(dict(name="Joe")))
