@@ -1,0 +1,4 @@
+# python bytecode file
+*.pyc
+# django default db filename
+db.sqlite3
