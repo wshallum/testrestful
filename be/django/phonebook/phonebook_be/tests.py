@@ -30,8 +30,11 @@ class EntriesListTests(TestCase):
         self.assertEqual(response.status_code, 201)
         location = response['location']
         location_url = urlparse.urlparse(location)
+
         response = self.client.get(location_url.path)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['content-type'], 'application/json')
         data = json.loads(response.content)
         self.assertEqual(data['name'], 'Joe')
+        entry_url = urlparse.urlparse(data['url'])
+        self.assertEqual(entry_url.path, location_url.path)
