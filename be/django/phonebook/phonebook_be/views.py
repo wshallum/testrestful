@@ -11,7 +11,7 @@ from .serializers import EntrySerializer
 def entries(request):
     if request.method == 'POST':
         data = JSONParser().parse(request)
-        serializer = EntrySerializer(data=data)
+        serializer = EntrySerializer(data=data, context=dict(request=request))
         if serializer.is_valid():
             new_entry = serializer.save()
             response = HttpResponse(
@@ -26,7 +26,7 @@ def entries(request):
 
 def entry(request, id):
     entry = Entry.objects.get(id=id)
-    serializer = EntrySerializer(entry)
+    serializer = EntrySerializer(entry, context=dict(request=request))
     json_data = JSONRenderer().render(serializer.data)
     response = HttpResponse(json_data, content_type='application/json')
     response.status_code = 200
