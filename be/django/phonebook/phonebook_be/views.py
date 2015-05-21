@@ -2,4 +2,4 @@ from django.http import HttpResponse
 
 
 def entries(request):
-    return HttpResponse('')
+    return HttpResponse('{}', content_type='application/json')
