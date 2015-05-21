@@ -2,6 +2,7 @@ import unittest
 import os
 import urllib
 
+
 class BaseBackendTest(unittest.TestCase):
     # append message to normal message so we have info on what the unequal
     # values are
@@ -11,8 +12,9 @@ class BaseBackendTest(unittest.TestCase):
         super(BaseBackendTest, self).__init__(method_name)
         self.backend_base_url = os.getenv('PHONEBOOK_BACKEND_BASE_URL')
         if self.backend_base_url is None:
-            raise KeyError, "No PHONEBOOK_BACKEND_BASE_URL in os environment"
-    def url(self, path, params = None):
+            raise KeyError("No PHONEBOOK_BACKEND_BASE_URL in os environment")
+
+    def url(self, path, params=None):
         if params is None:
             params = dict()
         result = self.backend_base_url + path
