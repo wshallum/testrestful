@@ -3,6 +3,10 @@ import os
 import urllib
 
 class BaseBackendTest(unittest.TestCase):
+    # append message to normal message so we have info on what the unequal
+    # values are
+    longMessage = True
+
     def __init__(self, method_name):
         super(BaseBackendTest, self).__init__(method_name)
         self.backend_base_url = os.getenv('PHONEBOOK_BACKEND_BASE_URL')
