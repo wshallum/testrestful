@@ -24,6 +24,7 @@ class EntriesListTests(TestCase):
 
     def test_entries_post_to_create(self):
         """Test POST /entries returns 201 and returns Location of new entry."""
+        # POST /entries
         response = self.client.post(
             '/entries',
             data=json.dumps(dict(name='Joe')), content_type='application/json')
@@ -31,6 +32,7 @@ class EntriesListTests(TestCase):
         location = response['location']
         location_url = urlparse.urlparse(location)
 
+        # GET new entry URL
         response = self.client.get(location_url.path)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['content-type'], 'application/json')
@@ -38,3 +40,17 @@ class EntriesListTests(TestCase):
         self.assertEqual(data['name'], 'Joe')
         entry_url = urlparse.urlparse(data['url'])
         self.assertEqual(entry_url.path, location_url.path)
+
+        # GET /entries search for new entry
+        response = self.client.get('/entries')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['content-type'], 'application/json')
+        entries = json.loads(response.content)
+        new_entry = None
+        for entry in entries:
+            if entry['url'] == data['url']:
+                new_entry = entry
+                break
+        self.assertTrue(new_entry is not None)
+        self.assertEquals(new_entry['url'], data['url'])
+        self.assertEquals(new_entry['name'], 'Joe')

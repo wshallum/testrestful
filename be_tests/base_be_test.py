@@ -21,3 +21,9 @@ class BaseBackendTest(unittest.TestCase):
         if len(params) > 0:
             result = result + '?' + urllib.urlencode(params)
         return result
+
+    def assertResponseCodeAndContentType(
+            self, response, code, content_type, message=None):
+        self.assertEqual(response.status_code, code, message)
+        self.assertEqual(
+            response.headers['content-type'], content_type, message)

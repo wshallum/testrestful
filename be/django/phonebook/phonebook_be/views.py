@@ -14,14 +14,18 @@ def entries(request):
         serializer = EntrySerializer(data=data, context=dict(request=request))
         if serializer.is_valid():
             new_entry = serializer.save()
+            json_data = JSONRenderer().render(serializer.data)
             response = HttpResponse(
-                serializer.data, content_type='application/json')
+                json_data, content_type='application/json')
             response.status_code = 201  # created
             response['location'] = reverse(
                 'entry', kwargs=dict(id=new_entry.id))
             return response
     else:
-        return HttpResponse('{}', content_type='application/json')
+        serializer = EntrySerializer(
+            Entry.objects.all(), many=True, context=dict(request=request))
+        json_data = JSONRenderer().render(serializer.data)
+        return HttpResponse(json_data, content_type='application/json')
 
 
 def entry(request, id):
