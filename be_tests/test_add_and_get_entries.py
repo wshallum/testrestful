@@ -30,12 +30,15 @@ class TestAddAndGetEntries(BaseBackendTest):
             if entry['url'] == new_entry_url:
                 new_entry = entry
                 break
-        self.assertTrue(entry is not None, 'new entry found')
-        self.assertEqual(entry['name'], 'Joe', 'new entry has correct name')
+        self.assertTrue(new_entry is not None, 'new entry found')
+        self.assertEqual(
+            new_entry['name'], 'Joe', 'new entry has correct name')
         # The user tries to get the individual entry
         get_entry_result = requests.get(new_entry_url)
         self.assertResponseCodeAndContentType(
             get_entry_result, 200, 'application/json',
             'GET entry url returns 200 application/json')
-        self.assertEquals(get_entry_result.json()['url'], new_entry_url, 'Entry URL matches')
-        self.assertEquals(get_entry_result.json()['name'], 'Joe', 'Entry name matches')
+        get_entry_json = get_entry_result.json()
+        self.assertEquals(
+            get_entry_json['url'], new_entry_url, 'Entry URL matches')
+        self.assertEquals(get_entry_json['name'], 'Joe', 'Entry name matches')
