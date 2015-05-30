@@ -1,7 +1,8 @@
 from django.test import TestCase
+from django.db import IntegrityError
 import json
 import urlparse
-from .models import Entry
+from .models import Entry, Phone
 
 
 class EntryTests(TestCase):
@@ -54,3 +55,30 @@ class EntriesListTests(TestCase):
         self.assertTrue(new_entry is not None)
         self.assertEquals(new_entry['url'], data['url'])
         self.assertEquals(new_entry['name'], 'Joe')
+
+
+class PhoneTests(TestCase):
+
+    def test_create_and_get_phone(self):
+        """Test creating Phone"""
+        entry = Entry.objects.create(name='Joe')
+        number_1 = Phone.objects.create(
+            type='mobile', number='0123', parent=entry)
+        number_2 = Phone.objects.get(id=number_1.id)
+        self.assertEquals(number_1.type, number_2.type)
+        self.assertEquals(number_1.number, number_2.number)
+        self.assertEquals(number_1.parent, number_2.parent)
+
+    def test_deleting_parent_cascades_to_phones(self):
+        """Test that phones are deleted when parent entry is deleted."""
+        entry = Entry.objects.create(name='Joe')
+        number = Phone.objects.create(
+            type='mobile', number='0123', parent=entry)
+        the_id = number.id
+        entry.delete()
+        with self.assertRaises(Phone.DoesNotExist):
+            Phone.objects.get(id=the_id)
+
+    def test_saving_fails_without_parent_entry(self):
+        with self.assertRaises(IntegrityError):
+            Phone.objects.create(type='mobile', number='0123')
