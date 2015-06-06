@@ -56,6 +56,38 @@ class EntriesListTests(TestCase):
         self.assertEquals(new_entry['url'], data['url'])
         self.assertEquals(new_entry['name'], 'Joe')
 
+    def test_entries_post_to_create_with_phone(self):
+        """Test POST /entries with phone works."""
+        # POST /entries
+        entry_data = dict(
+            name='Joe',
+            phones=[
+                dict(type='home', number='123'),
+                dict(type='mobile', number='456')])
+        response = self.client.post(
+            '/entries', data=json.dumps(entry_data),
+            content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+        location = response['location']
+        location_url = urlparse.urlparse(location)
+
+        # GET new entry URL
+        response = self.client.get(location_url.path)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['content-type'], 'application/json')
+        data = json.loads(response.content)
+        self.assertEqual(data['name'], 'Joe')
+        self.assertEqual(len(data['phones']), 2)
+        for phone in data['phones']:
+            if phone['type'] == 'home':
+                self.assertEqual(phone['number'], '123')
+            elif phone['type'] == 'mobile':
+                self.assertEqual(phone['number'], '456')
+            else:
+                self.assertTrue(False, "unexpected phone type")
+        entry_url = urlparse.urlparse(data['url'])
+        self.assertEqual(entry_url.path, location_url.path)
+
 
 class PhoneTests(TestCase):
 
