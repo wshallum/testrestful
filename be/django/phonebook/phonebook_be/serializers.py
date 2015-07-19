@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Entry, Phone
+import six
 
 
 class MultiKeyHyperlinkedIdentityField(serializers.HyperlinkedIdentityField):
@@ -18,7 +19,7 @@ class MultiKeyHyperlinkedIdentityField(serializers.HyperlinkedIdentityField):
 
     def get_object(self, view_name, view_args, view_kwargs):
         lookup_kwargs = dict()
-        for kwarg, field in self.lookup_kwarg_to_field.iteritems():
+        for kwarg, field in six.iteritems(self.lookup_kwarg_to_field):
             lookup_kwargs[field] = view_kwargs[kwarg]
         return self.get_queryset().get(**lookup_kwargs)
 
@@ -27,7 +28,7 @@ class MultiKeyHyperlinkedIdentityField(serializers.HyperlinkedIdentityField):
             return None
 
         view_kwargs = dict()
-        for kwarg, field in self.lookup_kwarg_to_field.iteritems():
+        for kwarg, field in six.iteritems(self.lookup_kwarg_to_field):
             view_kwargs[kwarg] = getattr(obj, field)
         return self.reverse(
             view_name, kwargs=view_kwargs, request=request, format=format)

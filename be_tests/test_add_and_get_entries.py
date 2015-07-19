@@ -1,6 +1,6 @@
 import json
 import requests
-from base_be_test import BaseBackendTest
+from .base_be_test import BaseBackendTest
 
 
 class TestAddAndGetEntries(BaseBackendTest):

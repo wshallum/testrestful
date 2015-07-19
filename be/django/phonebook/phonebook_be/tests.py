@@ -1,8 +1,14 @@
 from django.test import TestCase
 from django.db import IntegrityError
 import json
-import urlparse
+try:
+	import urlparse
+except ImportError:
+	import urllib.parse as urlparse
 from .models import Entry, Phone
+
+def load_json_from_bytestring(b):
+    return json.loads(b.decode('utf-8'))
 
 
 class EntryTests(TestCase):
@@ -21,7 +27,7 @@ class EntriesListTests(TestCase):
         response = self.client.get('/entries')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['content-type'], 'application/json')
-        json.loads(response.content)
+        load_json_from_bytestring(response.content)
 
     def test_entries_post_to_create(self):
         """Test POST /entries returns 201 and returns Location of new entry."""
@@ -37,7 +43,7 @@ class EntriesListTests(TestCase):
         response = self.client.get(location_url.path)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['content-type'], 'application/json')
-        data = json.loads(response.content)
+        data = load_json_from_bytestring(response.content)
         self.assertEqual(data['name'], 'Joe')
         entry_url = urlparse.urlparse(data['url'])
         self.assertEqual(entry_url.path, location_url.path)
@@ -46,7 +52,7 @@ class EntriesListTests(TestCase):
         response = self.client.get('/entries')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['content-type'], 'application/json')
-        entries = json.loads(response.content)
+        entries = load_json_from_bytestring(response.content)
         new_entry = None
         for entry in entries:
             if entry['url'] == data['url']:
@@ -75,7 +81,7 @@ class EntriesListTests(TestCase):
         response = self.client.get(location_url.path)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['content-type'], 'application/json')
-        data = json.loads(response.content)
+        data = load_json_from_bytestring(response.content)
         self.assertEqual(data['name'], 'Joe')
         self.assertEqual(len(data['phones']), 2)
         for phone in data['phones']:
