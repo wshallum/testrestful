@@ -29,9 +29,19 @@ def entries(request):
         return HttpResponse(json_data, content_type='application/json')
 
 
+@csrf_exempt
 def entry(request, id):
     entry = Entry.objects.get(id=id)
-    serializer = EntrySerializer(entry, context=dict(request=request))
+    if request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = EntrySerializer(
+            entry,
+            data=data,
+            context=dict(request=request))
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+    else:
+        serializer = EntrySerializer(entry, context=dict(request=request))
     json_data = JSONRenderer().render(serializer.data)
     response = HttpResponse(json_data, content_type='application/json')
     response.status_code = 200
