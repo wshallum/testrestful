@@ -53,6 +53,18 @@ class EntrySerializer(serializers.HyperlinkedModelSerializer):
         model = Entry
         fields = ('url', 'name', 'phones')
 
+    def update(self, instance, validated_data):
+        # pop this first so super does not complain about writable nested
+        # serializers. we will update phones ourselves.
+        phone_data = validated_data.pop('phones', [])
+
+        instance = super(EntrySerializer, self).update(instance, validated_data)
+
+        if len(phone_data) == 0:
+            # TODO fix later to sync properly
+            instance.phones.all().delete()
+        return instance
+
     def create(self, validated_data):
         phone_data = validated_data.pop('phones', [])
         new_entry = Entry.objects.create(**validated_data)

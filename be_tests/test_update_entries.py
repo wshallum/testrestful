@@ -40,3 +40,34 @@ class TestUpdateEntries(BaseBackendTest):
             'GET entry url returns 200 application/json')
         get_entry_json = get_entry_result.json()
         self.assertEquals(get_entry_json['name'], 'Ken', 'Entry name matches')
+
+    def test_update_overwrites_phones(self):
+        add_result = requests.post(
+            self.url('/entries'),
+            json.dumps(dict(
+                name="Alice",
+                phones=[
+                    {'type': 'home', 'number': '0123'},
+                    {'type': 'mobile', 'number': '0456'}
+                ]
+            )),
+            headers={'content-type': 'application/json'})
+        new_entry_url = add_result.json()['url']
+
+        # The user updates the entry
+        put_entry_result = requests.put(
+            new_entry_url,
+            data=json.dumps(dict(name='Ken', phones=[])),
+            headers={'content-type': 'application/json'})
+        self.assertResponseCodeAndContentType(
+            put_entry_result, 200, 'application/json',
+            'PUT entry url returns 200 application/json')
+
+        # The user tries to get the individual entry again
+        get_entry_result = requests.get(new_entry_url)
+        self.assertResponseCodeAndContentType(
+            get_entry_result, 200, 'application/json',
+            'GET entry url returns 200 application/json')
+        get_entry_json = get_entry_result.json()
+        self.assertEquals(get_entry_json['name'], 'Ken', 'Entry name matches')
+        self.assertEquals(get_entry_json['phones'], [])

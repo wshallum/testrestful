@@ -120,6 +120,37 @@ class EntryUpdateTests(TestCase):
         data = load_json_from_bytestring(response.content)
         self.assertEqual(data['name'], 'Jane')
 
+    def test_entry_put_to_update_overwriting_phones(self):
+        # create
+        response = self.client.post(
+            '/entries',
+            data=json.dumps(dict(
+                name='Joe',
+                phones=[
+                    {'type': 'home', 'number': '0123'},
+                    {'type': 'mobile', 'number': '0456'}
+                ]
+            )),
+            content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+        location = response['location']
+        location_url = urlparse.urlparse(location)
+
+        # update
+        response = self.client.put(
+            location_url.path,
+            data=json.dumps(dict(name='Jane')),
+            content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+
+        # get again, should be changed
+        response = self.client.get(location_url.path)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['content-type'], 'application/json')
+        data = load_json_from_bytestring(response.content)
+        self.assertEqual(data['name'], 'Jane')
+        self.assertEqual(data['phones'], [])
+
 
 class PhoneTests(TestCase):
 
