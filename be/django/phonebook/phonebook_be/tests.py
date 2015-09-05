@@ -2,10 +2,11 @@ from django.test import TestCase
 from django.db import IntegrityError
 import json
 try:
-	import urlparse
+    import urlparse
 except ImportError:
-	import urllib.parse as urlparse
+    import urllib.parse as urlparse
 from .models import Entry, Phone
+
 
 def load_json_from_bytestring(b):
     return json.loads(b.decode('utf-8'))
