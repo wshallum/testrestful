@@ -89,6 +89,7 @@ class TestAddAndGetEntries(BaseBackendTest):
         self.assertEquals(entry_json['name'], 'Alice', 'Entry name matches')
         self.assertEquals(len(entry_json['phones']), 2, 'Phone count matches')
         for phone in entry_json['phones']:
+            self.assertIn('url', phone)
             if phone['type'] == 'home':
                 self.assertEquals(phone['number'], '0123')
             elif phone['type'] == 'mobile':
